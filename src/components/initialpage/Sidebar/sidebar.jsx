@@ -43,7 +43,7 @@
               <a href="#"><i className="la la-gift" /> <span> Vendor</span> <span className="menu-arrow" /></a>
               <ul style={{display: 'none'}}>
                 <li>
-                  <Link className={pathname.includes('/admindashboard') ?"active" :""} to="/vendor/details">
+                  <Link className={pathname.includes('/admindashboard') ?"active" :""} to="vendor/details_2">
                     Vendor
                   </Link>
                 </li>
