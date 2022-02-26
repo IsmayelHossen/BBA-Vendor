@@ -26,12 +26,6 @@ class Vendor_details2 extends React.Component {
     super(props);
   }
   state = {
-    invoice_id: "",
-    vendor_name: "",
-    mobile: "",
-    Service_Type: "",
-    address: "",
-    modal: false,
     vendor_list: [],
     vendor_id: "",
     vendor_title: "",
@@ -39,19 +33,22 @@ class Vendor_details2 extends React.Component {
     searchProject: [],
     search: "",
     search_vendor_result: [],
+    product_no: "",
+    product_name: "",
+    Category: "",
+    product_price: "",
+    product_quantity: "",
+    product_description: "",
+    image: "",
+    remarkProduct: "",
+    Array_data: [],
   };
   componentDidMount() {
-    this.check_refresh();
     this.vendor_data_get();
+    this.vendor_push_data();
   }
-  check_refresh = () => {
-    const reloadCount = Number(sessionStorage.getItem("reloadCount")) || 0;
-    if (reloadCount < 1) {
-      sessionStorage.setItem("reloadCount", String(reloadCount + 1));
-      window.location.reload();
-    } else {
-      sessionStorage.removeItem("reloadCount");
-    }
+  vendor_push_data = () => {
+    console.log(this.state.Array_data);
   };
   vendor_data_get = async () => {
     // const response = await Get_venor_Data();
@@ -93,27 +90,68 @@ class Vendor_details2 extends React.Component {
   };
 
   //form submit to controller
-  SubmitForm = async (e) => {
+  SubmitMoraData = async (e) => {
     e.preventDefault();
-    if (!this.state.invoice_id) {
-      toast.error("Invoice Id required");
-    } else if (this.state.mobile.length != 11) {
-      toast.error("Vailed Mobile number required!");
+    if (!this.state.product_no) {
+      toast.error("Product Id required");
+    } else if (!this.state.product_name) {
+      toast.error("Product Name!");
     } else {
       console.log(this.state.invoice_id);
       console.log(this.invoice_id);
+      const postBody = {
+        product_no: this.state.product_no,
+        product_name: this.state.product_name,
+        Category: this.state.Category,
+        product_price: this.state.product_price,
+        product_quantity: this.state.product_quantity,
+        product_description: this.state.product_description,
+        image: this.state.image,
+        remarkProduct: this.state.remarkProduct,
+      };
+      this.state.Array_data.push(postBody);
 
       this.setState({
-        invoice_id: "",
-        vendor_name: "",
-        mobile: "",
-        Service_Type: "",
-        address: "",
-        modal: false,
+        product_no: "",
+        product_name: "",
+        Category: "",
+        product_price: "",
+        product_quantity: "",
+        product_description: "",
+        image: "",
+        remarkProduct: "",
       });
+      this.vendor_push_data();
+      toast.success("Data Added");
     }
   };
   //add vendor functionality end
+  // DemoDataDelete
+  DemoDataDelete = (product_name) => {
+    alert(product_name);
+    const str = this.state.Array_data.toString();
+    console.log("array data" + str);
+    var people = this.state.Array_data;
+    var toRemove = product_name;
+    var index = people.indexOf(toRemove);
+    if (index > -1) {
+      //Make sure item is present in the array, without if condition, -n indexes will be considered from the end of the array.
+      people.splice(index, 1);
+      this.setState({ Array_data: people });
+    }
+    console.log(people);
+  };
+  // FinalSubmit functionality
+  FinalSubmit = (e) => {
+    e.preventDefault();
+
+    if (this.state.product_no == 0) {
+      toast.error("Please add some product");
+    } else {
+      this.setState({ Array_data: "" });
+      toast.success("Data Successfully Added");
+    }
+  };
 
   //active vendor background select
   Active_vendor = (id, title, body) => {
@@ -181,128 +219,12 @@ class Vendor_details2 extends React.Component {
 
             {/* add vendor  start*/}
             <div className="row">
-              <div className="col-md-12">
-                {/* modal start */}
-                <button
-                  type="button"
-                  className="btn btn-primary float-right vendor_add_button"
-                  style={{ MarginBottom: ".5em" }}
-                  data-toggle="modal"
-                  data-target="#exampleModal1"
-                >
-                  Add Vendor
-                </button>
-
-                <div class="modal" id="exampleModal1" tabindex="-1">
-                  <div class="modal-dialog  modal-lg">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h4 class="modal-title">Add Vendor Member</h4>
-                        <button
-                          type="button"
-                          class="close"
-                          data-dismiss="modal"
-                        >
-                          &times;
-                        </button>
-                      </div>
-
-                      <div class="modal-body">
-                        {/* form */}
-                        <form action=" " onSubmit={this.SubmitForm}>
-                          <div class="form-group">
-                            <input
-                              type="number"
-                              class="form-control"
-                              placeholder="Enter Invoice id"
-                              value={this.state.invoice_id}
-                              onChange={(e) => this.changeInput(e)}
-                              name="invoice_id"
-                              id="invoice_id"
-                            ></input>
-                          </div>
-                          <div class="form-group">
-                            <input
-                              type="text"
-                              class="form-control"
-                              placeholder="Enter Name Company/Person"
-                              value={this.state.vendor_name}
-                              onChange={(e) => this.changeInput(e)}
-                              name="vendor_name"
-                              id="vendor_name"
-                            ></input>
-                          </div>
-                          <div class="form-group">
-                            <input
-                              type="number"
-                              class="form-control"
-                              placeholder="Enter mobile"
-                              value={this.state.mobile}
-                              onChange={(e) => this.changeInput(e)}
-                              name="mobile"
-                              id="mobile"
-                              pattern="[01][3/4/5/6/7/8/9][0-9]{8}"
-                            ></input>
-                          </div>
-                          <div class="form-group">
-                            <input
-                              type="text"
-                              class="form-control"
-                              placeholder="Enter Service Type"
-                              value={this.state.Service_Type}
-                              onChange={(e) => this.changeInput(e)}
-                              name="Service_Type"
-                              id="Service_Type"
-                            ></input>
-                          </div>
-                          <div class="form-group">
-                            <textarea
-                              class="form-control"
-                              name="address"
-                              id="address"
-                              rows="3"
-                              value={this.state.address}
-                              onChange={(e) => this.changeInput(e)}
-                            ></textarea>
-                          </div>
-
-                          <button
-                            type="submit"
-                            class="btn btn-primary float-left"
-                          >
-                            Submit
-                          </button>
-                          <button
-                            type="button"
-                            class="btn btn-danger float-right"
-                            data-dismiss="modal"
-                          >
-                            Close
-                          </button>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* modal end */}
-              </div>
+              <div className="col-md-12"></div>
             </div>
             <div className="row">
               <div className="col-md-4">
                 <form>
                   <div class="vendor_details2_search_option">
-                    {this.state.vendor_list != 0 &&
-                      this.state.searchProject.length === 0 && (
-                        <span
-                          class=" alert-warning"
-                          style={{
-                            padding: ".2em .5em",
-                            marginLeft: "4.5em",
-                          }}
-                        >
-                          No result found!
-                        </span>
-                      )}
                     <h4 className="text-center">Vendor Search</h4>
                     <input
                       type="text"
@@ -338,6 +260,19 @@ class Vendor_details2 extends React.Component {
                       ))}
                     </>
                   )}
+                  {this.state.search != 0 &&
+                    this.state.searchProject.length === 0 && (
+                      <span
+                        class=""
+                        style={{
+                          padding: ".2em .5em",
+                          marginLeft: "4.5em",
+                          color: "red",
+                        }}
+                      >
+                        No result found!
+                      </span>
+                    )}
                   {/* According to search ,if result match then will be show */}
                   {this.state.searchProject.map((row1, index) => (
                     <>
@@ -361,6 +296,248 @@ class Vendor_details2 extends React.Component {
               {this.state.vendor_id != 0 && (
                 <div className="col-md-8">
                   <>
+                    {/* add more modal start */}
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      data-toggle="modal"
+                      data-target="#myModal"
+                    >
+                      Add More
+                    </button>
+                    <div class="modal" id="myModal">
+                      <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h4 class="modal-title">Modal Heading</h4>
+                            <button
+                              type="button"
+                              class="close"
+                              data-dismiss="modal"
+                            >
+                              &times;
+                            </button>
+                          </div>
+
+                          <div class="modal-body">
+                            <div className="vendor_detais2_rightside_content">
+                              {/* form */}
+                              <form onSubmit={this.SubmitMoraData}>
+                                <div className="row">
+                                  <div className="col-md-6">
+                                    <div class="form-group">
+                                      <label for="email">Product No</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        placeholder="Enter Product No"
+                                        id="email"
+                                        name="product_no"
+                                        value={this.state.product_no}
+                                        onChange={(e) => this.changeInput(e)}
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div className="col-md-6">
+                                    <div class="form-group">
+                                      <label for="pwd">Product Name</label>
+                                      <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="Enter Product Name"
+                                        id="pwd"
+                                        name="product_name"
+                                        value={this.state.product_name}
+                                        onChange={(e) => this.changeInput(e)}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="row">
+                                  <div className="col-md-6">
+                                    <div class="form-group">
+                                      <label for="sel1">Category:</label>
+                                      <select
+                                        class="form-control"
+                                        id="sel1"
+                                        name="Category"
+                                        onChange={(e) => this.changeInput(e)}
+                                      >
+                                        <option value={this.state.Category}>
+                                          Select
+                                        </option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                                  <div className="col-md-6">
+                                    <div class="form-group">
+                                      <label for="email">Product Price</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        placeholder="Enter Product No"
+                                        id="email"
+                                        name="product_price"
+                                        value={this.state.product_price}
+                                        onChange={(e) => this.changeInput(e)}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="row">
+                                  <div className="col-md-6">
+                                    <div class="form-group">
+                                      <label for="email">
+                                        Product Quantity
+                                      </label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        placeholder="Enter Product Quantity"
+                                        id="email"
+                                        name="product_quantity"
+                                        value={this.state.product_quantity}
+                                        onChange={(e) => this.changeInput(e)}
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div className="col-md-6">
+                                    <div class="form-group">
+                                      <textarea
+                                        class="form-control"
+                                        name="product_description"
+                                        id="address"
+                                        rows="3"
+                                        value={this.state.product_description}
+                                        onChange={(e) => this.changeInput(e)}
+                                      >
+                                        product description
+                                      </textarea>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="row">
+                                  <div className="col-md-6">
+                                    <div class="form-group">
+                                      <label for="exampleFormControlFile1">
+                                        Upload Photo
+                                      </label>
+                                      <input
+                                        type="file"
+                                        class="form-control-file"
+                                        id="exampleFormControlFile1"
+                                        name="image"
+                                        value={this.state.image}
+                                        onChange={(e) => this.changeInput(e)}
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div className="col-md-6">
+                                    <div class="form-group">
+                                      <textarea
+                                        class="form-control"
+                                        name="product "
+                                        id="address"
+                                        rows="3"
+                                        name="remarkProduct"
+                                        value={this.state.remarkProduct}
+                                        onChange={(e) => this.changeInput(e)}
+                                      >
+                                        Remark about product
+                                      </textarea>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">
+                                  Add
+                                </button>
+                              </form>
+
+                              {/* table start   */}
+                              {this.state.Array_data != 0 && (
+                                <div className="table-responsive">
+                                  <table class="table table-striped">
+                                    <thead>
+                                      <tr>
+                                        <th>Product No</th>
+                                        <th>Product Name</th>
+                                        <th>Category</th>
+                                        <th>Product Price</th>
+                                        <th>Product Quantity</th>
+                                        <th>Descirption</th>
+                                        <th>Image</th>
+                                        <th>Remark</th>
+                                        <th>Delete</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {this.state.Array_data.map(
+                                        (row, index) => (
+                                          <tr>
+                                            <td>{row.product_no}</td>
+                                            <td>{row.product_name}</td>
+                                            <td>{row.Category}</td>
+                                            <td>{row.product_price}</td>
+                                            <td>{row.product_quantity}</td>
+                                            <td>{row.product_description}</td>
+                                            <td>{row.image}</td>
+                                            <td>{row.remarkProduct}</td>
+                                            <td>
+                                              <button
+                                                onClick={() =>
+                                                  this.DemoDataDelete(
+                                                    row.product_name
+                                                  )
+                                                }
+                                              >
+                                                Delete
+                                              </button>
+                                            </td>
+                                          </tr>
+                                        )
+                                      )}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              )}
+
+                              {/* table end */}
+
+                              {/* Finally send data */}
+                              <form onSubmit={this.FinalSubmit}>
+                                <button
+                                  type="submit"
+                                  style={{ marginTop: "1em" }}
+                                  class="btn btn-success float-right"
+                                >
+                                  Submit
+                                </button>
+                              </form>
+                            </div>
+                          </div>
+
+                          <div class="modal-footer">
+                            <button
+                              type="button"
+                              class="btn btn-danger"
+                              data-dismiss="modal"
+                            >
+                              Close
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {/* add more modal end */}
                     <div className="vendor_detais2_rightside_title">
                       <h6>Vendor:{this.state.vendor_id}</h6>
                       <div className="row">
@@ -372,202 +549,6 @@ class Vendor_details2 extends React.Component {
                         </div>
                       </div>
                     </div>
-                    <div className="vendor_detais2_rightside_content">
-                      {/* form */}
-                      <form action="#">
-                        <div className="row">
-                          <div className="col-md-6">
-                            <div class="form-group">
-                              <label for="email">Product No</label>
-                              <input
-                                type="number"
-                                class="form-control"
-                                placeholder="Enter Product No"
-                                id="email"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="col-md-6">
-                            <div class="form-group">
-                              <label for="pwd">Product Name</label>
-                              <input
-                                type="number"
-                                class="form-control"
-                                placeholder="Enter Product Name"
-                                id="pwd"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-md-6">
-                            <div class="form-group">
-                              <label for="sel1">Category:</label>
-                              <select class="form-control" id="sel1">
-                                <option>Select</option>
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div class="form-group">
-                              <label for="email">Product Price</label>
-                              <input
-                                type="number"
-                                class="form-control"
-                                placeholder="Enter Product No"
-                                id="email"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-md-6">
-                            <div class="form-group">
-                              <label for="email">Product Quantity</label>
-                              <input
-                                type="number"
-                                class="form-control"
-                                placeholder="Enter Product Quantity"
-                                id="email"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="col-md-6">
-                            <div class="form-group">
-                              <textarea
-                                class="form-control"
-                                name="product_description"
-                                id="address"
-                                rows="3"
-                                value={this.state.address}
-                                onChange={(e) => this.changeInput(e)}
-                              >
-                                product description
-                              </textarea>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="row">
-                          <div className="col-md-6">
-                            <div class="form-group">
-                              <label for="exampleFormControlFile1">
-                                Upload Photo
-                              </label>
-                              <input
-                                type="file"
-                                class="form-control-file"
-                                id="exampleFormControlFile1"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="col-md-6">
-                            <div class="form-group">
-                              <textarea
-                                class="form-control"
-                                name="product "
-                                id="address"
-                                rows="3"
-                                value={this.state.address}
-                                onChange={(e) => this.changeInput(e)}
-                              >
-                                Remark about product
-                              </textarea>
-                            </div>
-                          </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">
-                          Submit
-                        </button>
-                      </form>
-                    </div>
-
-                    {/* table start   */}
-                    <div className="table-responsive">
-                      <table class="table table-striped">
-                        <thead>
-                          <tr>
-                            <th>Invoice Id</th>
-                            <th>Company/Person Name</th>
-                            <th>Mobile</th>
-                            <th>Service Type</th>
-                            <th>Address</th>
-                            <th>Details</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>123456</td>
-                            <td>ABC</td>
-                            <td>01952152883</td>
-                            <td>Computer provide</td>
-                            <td>Uttara,Dhaka</td>
-                            <td>
-                              <button className="btn btn-primary">
-                                Details
-                              </button>
-                            </td>
-                            <td>
-                              <button className="btn btn-success">Edit</button>
-                            </td>
-                            <td>
-                              <button className="btn btn-danger">Delete</button>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>123456</td>
-                            <td>ABC</td>
-                            <td>01952152883</td>
-                            <td>Instruments Provide</td>
-                            <td>Dhaka/Bangladesh</td>
-                            <td>
-                              <button
-                                className="btn btn-primary"
-                                onClick={() => this.Details(123)}
-                              >
-                                Details
-                              </button>
-                            </td>
-                            <td>
-                              <button className="btn btn-success">Edit</button>
-                            </td>
-                            <td>
-                              <button className="btn btn-danger">Delete</button>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>123456</td>
-                            <td>ABC</td>
-                            <td>01952152883</td>
-                            <td>Computer provide</td>
-                            <td>Uttara,Dhaka</td>
-                            <td>
-                              <button className="btn btn-primary">
-                                Details
-                              </button>
-                            </td>
-                            <td>
-                              <button className="btn btn-success">Edit</button>
-                            </td>
-                            <td>
-                              <button className="btn btn-danger">Delete</button>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-
-                    {/* table end */}
                   </>
                 </div>
               )}

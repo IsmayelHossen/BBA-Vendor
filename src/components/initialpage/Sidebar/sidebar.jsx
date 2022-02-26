@@ -42,9 +42,14 @@
             <li className="submenu text-start">
               <a href="#"><i className="la la-gift" /> <span> Vendor</span> <span className="menu-arrow" /></a>
               <ul style={{display: 'none'}}>
+              <li>
+                  <Link className={pathname.includes('/vendor') ?"active" :""} to="/vendor/add/123">
+                  Add  Vendor
+                  </Link>
+                </li>
                 <li>
-                  <Link className={pathname.includes('/admindashboard') ?"active" :""} to="vendor/details_2">
-                    Vendor
+                  <Link className={pathname.includes('/vendor') ?"active" :""} to="/vendor/details_2">
+                    Vendor details
                   </Link>
                 </li>
 
@@ -110,4 +115,4 @@
  
 }
 
-export default Sidebar;
+export default withRouter(Sidebar);
